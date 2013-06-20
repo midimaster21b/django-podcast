@@ -1,8 +1,9 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.files.storage import get_storage_class
+from django.core.files.storage import get_storage_class, default_storage
 from django.db.utils import load_backend
+from django.db.models.signals import post_save, post_delete
 
 from podcast.managers import EpisodeManager
 
@@ -545,3 +546,20 @@ class Enclosure(models.Model):
 
     def __unicode__(self):
         return u'%s' % (self.file)
+
+
+def update_xml_file(sender, instance=False, **kwargs):
+    if instance:
+        from django.template.loader import render_to_string
+        f = default_storage.open('{0}-feed.xml'.format(instance.show.slug), 'w')
+        f.write(render_to_string('podcast/show_feed.html', {'object': instance.show}))
+        f.close()
+
+post_save.connect(update_xml_file, sender=Episode)
+post_delete.connect(update_xml_file, sender=Episode)
+
+post_save.connect(update_xml_file, sender=Enclosure)
+post_delete.connect(update_xml_file, sender=Enclosure)
+
+post_save.connect(update_xml_file, sender=Show)
+post_delete.connect(update_xml_file, sender=Show)

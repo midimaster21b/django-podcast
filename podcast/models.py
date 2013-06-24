@@ -9,6 +9,19 @@ from podcast.managers import EpisodeManager
 
 PODCAST_STORAGE = get_storage_class(getattr(settings, 'PODCAST_STORAGE', None))
 
+def generate_user_tuples():
+    """
+    Generate a tuple containing tuples that contain individuals username
+    and primary key.
+
+    """
+    retval = ()
+    for user in User.objects.all():
+        retval += ( (str(user.pk), str(user.get_username())), )
+
+    return retval
+        
+
 class ParentCategory(models.Model):
     """Parent Category model."""
     PARENT_CHOICES = (
@@ -171,8 +184,8 @@ class Show(models.Model):
     language = models.CharField(max_length=5, default='en-us', help_text='Default is American English. See <a href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1</a> and <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">ISO 3166-1</a> for more language codes.', blank=True)
     copyright = models.CharField(max_length=255, default='All rights reserved', choices=COPYRIGHT_CHOICES, help_text='See <a href="http://creativecommons.org/about/license/">Creative Commons licenses</a> for more information.')
     copyright_url = models.URLField('Copyright URL', blank=True, help_text='A URL pointing to additional copyright information. Consider a <a href="http://creativecommons.org/licenses/">Creative Commons license URL</a>.')
-    author = models.ManyToManyField(User, related_name='show_authors', help_text='Remember to save the user\'s name and e-mail address in the <a href="../../../auth/user/">User application</a>.<br />')
-    webmaster = models.ForeignKey(User, related_name='webmaster', blank=True, null=True, help_text='Remember to save the user\'s name and e-mail address in the <a href="../../../auth/user/">User application</a>.')
+    author = models.ManyToManyField(User, choices=generate_user_tuples(), related_name='show_authors', help_text='Remember to save the user\'s name and e-mail address in the <a href="../../../auth/user/">User application</a>.<br />')
+    webmaster = models.ForeignKey(User, choices=generate_user_tuples(), related_name='webmaster', blank=True, null=True, help_text='Remember to save the user\'s name and e-mail address in the <a href="../../../auth/user/">User application</a>.')
     category_show = models.CharField('Category', max_length=255, blank=True, help_text='Limited to one user-specified category for the sake of sanity.')
     domain = models.URLField(blank=True, help_text='A URL that identifies a categorization taxonomy.')
     ttl = models.PositiveIntegerField('TTL', help_text='"Time to Live," the number of minutes a channel can be cached before refreshing.', blank=True, null=True)
@@ -434,7 +447,7 @@ class Episode(models.Model):
     )
     # RSS 2.0
     show = models.ForeignKey(Show)
-    author = models.ManyToManyField(User, related_name='episode_authors', help_text='Remember to save the user\'s name and e-mail address in the <a href="../../../auth/user/">User application</a>.')
+    author = models.ManyToManyField(User, choices=generate_user_tuples(), related_name='episode_authors', help_text='Remember to save the user\'s name and e-mail address in the <a href="../../../auth/user/">User application</a>.')
     title_type = models.CharField('Title type', max_length=255, blank=True, default='Plain', choices=TYPE_CHOICES)
     title = models.CharField(max_length=255, help_text='Make it specific but avoid explicit language. Limit to 100 characters for a Google video sitemap.')
     slug = models.SlugField(unique=True, help_text='Auto-generated from Title.')

@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.storage import get_storage_class, default_storage
 from django.db.utils import load_backend
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_init
 
 from podcast.managers import EpisodeManager
 
@@ -20,6 +20,19 @@ def generate_user_tuples():
         retval += ( (str(user.pk), str(user.get_username())), )
 
     return retval
+
+def user_id_to_object(sender, *args, **kwargs):
+    kwargs['webmaster'] = User.objects.all()[0]
+    kwargs['author'] = User.objects.all()[0]
+
+
+    if 'webmaster' in kwargs:
+        # kwargs['webmaster'] = User.objects.filter(pk=kwargs['webmaster'])[0]
+        pass
+
+    if 'author' in kwargs.keys():
+        # kwargs['author'] = User.objects.filter(pk=kwargs['author'])[0]
+        pass
         
 
 class ParentCategory(models.Model):
@@ -568,11 +581,15 @@ def update_xml_file(sender, instance=False, **kwargs):
         f.write(render_to_string('podcast/show_feed.html', {'object': instance.show}))
         f.close()
 
-post_save.connect(update_xml_file, sender=Episode)
-post_delete.connect(update_xml_file, sender=Episode)
+post_save.connect(update_xml_file, sender=Episode, weak=False)
+post_delete.connect(update_xml_file, sender=Episode, weak=False)
+pre_init.connect(user_id_to_object, sender=Episode, weak=False)
 
-post_save.connect(update_xml_file, sender=Enclosure)
-post_delete.connect(update_xml_file, sender=Enclosure)
+post_save.connect(update_xml_file, sender=Enclosure, weak=False)
+post_delete.connect(update_xml_file, sender=Enclosure, weak=False)
+pre_init.connect(user_id_to_object, sender=Enclosure, weak=False)
 
-post_save.connect(update_xml_file, sender=Show)
-post_delete.connect(update_xml_file, sender=Show)
+post_save.connect(update_xml_file, sender=Show, weak=False)
+post_delete.connect(update_xml_file, sender=Show, weak=False)
+pre_init.connect(user_id_to_object, sender=Show, weak=False)
+

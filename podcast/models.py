@@ -566,11 +566,26 @@ class Enclosure(models.Model):
 
 
 def update_xml_file(sender, instance=False, **kwargs):
-    if instance:
-        from django.template.loader import render_to_string
-        f = default_storage.open('{0}-feed.xml'.format(instance.show.slug), 'w')
-        f.write(render_to_string('podcast/show_feed.html', {'object': instance.show}))
-        f.close()
+    if sender is Episode:
+        if instance:
+            from django.template.loader import render_to_string
+            f = default_storage.open('{0}-feed.xml'.format(instance.show.slug), 'w')
+            f.write(render_to_string('podcast/show_feed.html', {'object': instance.show}))
+            f.close()
+
+    elif sender is Enclosure:
+        if instance:
+            from django.template.loader import render_to_string
+            f = default_storage.open('{0}-feed.xml'.format(instance.episode.show.slug), 'w')
+            f.write(render_to_string('podcast/show_feed.html', {'object': instance.episode.show}))
+            f.close()
+
+    elif sender is Show:
+        if instance:
+            from django.template.loader import render_to_string
+            f = default_storage.open('{0}-feed.xml'.format(instance.slug), 'w')
+            f.write(render_to_string('podcast/show_feed.html', {'object': instance}))
+            f.close()
 
 post_save.connect(update_xml_file, sender=Episode)
 post_delete.connect(update_xml_file, sender=Episode)

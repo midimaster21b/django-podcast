@@ -20,7 +20,11 @@ def generate_user_tuples():
         retval += ( (str(user.pk), str(user.get_username())), )
 
     return retval
-        
+
+def get_user_by_id(self, value):
+    raise ValidationError('({0}) Some error message.'.format(value))
+    # return User.objects.filter(pk=value)[0]
+
 
 class ParentCategory(models.Model):
     """Parent Category model."""

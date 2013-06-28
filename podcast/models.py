@@ -513,6 +513,9 @@ class Episode(models.Model):
         except:
             return 0
 
+    def get_authors(self):
+        return ", ".join(['{0} {1}'.format(x.first_name, x.last_name) for x in self.author.all()])
+
 
 class Enclosure(models.Model):
     """Enclosure model."""

@@ -54,7 +54,7 @@ class EnclosureAdmin(admin.ModelAdmin):
 class EpisodeAdmin(admin.ModelAdmin):
     inlines = [EnclosureInline,]
     prepopulated_fields = {'slug': ("title",)}
-    list_display = ('title', 'update', 'show', 'status', 'date',)
+    list_display = ('title', 'get_authors', 'show', 'status', 'date',)
     list_editable = ('status', 'date',)
     list_filter = ('show', 'update')
     radio_fields = {'title_type': admin.HORIZONTAL, 'description_type': admin.HORIZONTAL, 'status': admin.HORIZONTAL}

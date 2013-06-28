@@ -552,25 +552,27 @@ class Enclosure(models.Model):
 
 
 def update_xml_file(sender, instance=False, **kwargs):
+    file_suffix = "feed.xml.new"
+    from datetime import datetime
     if sender is Episode:
         if instance:
             from django.template.loader import render_to_string
-            f = default_storage.open('{0}-feed.xml'.format(instance.show.slug), 'w')
-            f.write(render_to_string('podcast/show_feed.html', {'object': instance.show}))
+            f = default_storage.open('{0}-{1}'.format(instance.show.slug, file_suffix), 'w')
+            f.write(render_to_string('podcast/show_feed.html', {'object': instance.show, 'today': datetime.today()}))
             f.close()
 
     elif sender is Enclosure:
         if instance:
             from django.template.loader import render_to_string
-            f = default_storage.open('{0}-feed.xml'.format(instance.episode.show.slug), 'w')
-            f.write(render_to_string('podcast/show_feed.html', {'object': instance.episode.show}))
+            f = default_storage.open('{0}-{1}'.format(instance.episode.show.slug, file_suffix), 'w')
+            f.write(render_to_string('podcast/show_feed.html', {'object': instance.episode.show, 'today': datetime.today()}))
             f.close()
 
     elif sender is Show:
         if instance:
             from django.template.loader import render_to_string
-            f = default_storage.open('{0}-feed.xml'.format(instance.slug), 'w')
-            f.write(render_to_string('podcast/show_feed.html', {'object': instance}))
+            f = default_storage.open('{0}-{1}'.format(instance.slug, file_suffix), 'w')
+            f.write(render_to_string('podcast/show_feed.html', {'object': instance, 'today': datetime.today()}))
             f.close()
 
 post_save.connect(update_xml_file, sender=Episode)

@@ -7,6 +7,8 @@ from django.db.models.signals import post_save, post_delete
 
 from podcast.managers import EpisodeManager
 
+import re
+
 PODCAST_STORAGE = get_storage_class(getattr(settings, 'PODCAST_STORAGE', None))
 
 class ParentCategory(models.Model):
@@ -552,28 +554,58 @@ class Enclosure(models.Model):
 
 
 def update_xml_file(sender, instance=False, **kwargs):
-    file_suffix = "feed.xml.new"
+    file_suffix = "feed.xml"
     from datetime import datetime
+
+    # Replace https with http and remove url arguments
+    regexes = ((re.compile(r'http[s]?:\/\/(.*?)\?(.*?)<'), r'http://\1<'),
+               (re.compile(r'\"http[s]?:\/\/(.*?)\?(.*?)\"'), r'"http://\1"'))
+
     if sender is Episode:
         if instance:
             from django.template.loader import render_to_string
             f = default_storage.open('{0}-{1}'.format(instance.show.slug, file_suffix), 'w')
-            f.write(render_to_string('podcast/show_feed.html', {'object': instance.show, 'today': datetime.today()}))
+            contents = render_to_string('podcast/show_feed.html', {'object': instance.show, 'today': datetime.today()})
+
+            temp = []
+            for line in contents.split('\n'):
+                for search, replace in regexes:
+                    line = re.sub(search, replace, line)
+                temp.append(line)
+
+            f.write('\n'.join(temp))
             f.close()
 
     elif sender is Enclosure:
         if instance:
             from django.template.loader import render_to_string
             f = default_storage.open('{0}-{1}'.format(instance.episode.show.slug, file_suffix), 'w')
-            f.write(render_to_string('podcast/show_feed.html', {'object': instance.episode.show, 'today': datetime.today()}))
+            contents = render_to_string('podcast/show_feed.html', {'object': instance.episode.show, 'today': datetime.today()})
+
+            temp = []
+            for line in contents.split('\n'):
+                for search, replace in regexes:
+                    line = re.sub(search, replace, line)
+                temp.append(line)
+
+            f.write('\n'.join(temp))
             f.close()
 
     elif sender is Show:
         if instance:
             from django.template.loader import render_to_string
             f = default_storage.open('{0}-{1}'.format(instance.slug, file_suffix), 'w')
-            f.write(render_to_string('podcast/show_feed.html', {'object': instance, 'today': datetime.today()}))
+            contents = render_to_string('podcast/show_feed.html', {'object': instance, 'today': datetime.today()})
+
+            temp = []
+            for line in contents.split('\n'):
+                for search, replace in regexes:
+                    line = re.sub(search, replace, line)
+                temp.append(line)
+
+            f.write('\n'.join(temp))
             f.close()
+
 
 post_save.connect(update_xml_file, sender=Episode)
 post_delete.connect(update_xml_file, sender=Episode)

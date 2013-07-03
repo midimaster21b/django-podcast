@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
     <title>{{ object.title }}</title>
     <link>{{ object.link }}</link>
@@ -18,6 +18,7 @@
       <title>{{ object.title }}</title>
       <link>{{ object.link }}</link>
     </image>{% endif %}
+    <atom:link rel="self" type="application/rss+xml" href="http://feeds.reslife.org/accessrlc" />
     <itunes:author>{{ object.organization }}</itunes:author>
     <itunes:owner>
         <itunes:name>{% for author in object.author.all %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{% if author.first_name or author.last_name %}{% if author.first_name and author.last_name %}{{ author.first_name }} {{ author.last_name }}{% endif %}{% if author.first_name and not author.last_name %}{{ author.first_name }}{% endif %}{% if author.last_name and not author.first_name %}{{ author.last_name }}{% endif %}{% else %}{{ author.username }}{% endif %}{% endfor %}</itunes:name>

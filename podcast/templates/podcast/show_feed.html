@@ -14,9 +14,9 @@
     <docs>http://blogs.law.harvard.edu/tech/rss</docs>
     {% if object.ttl %}<ttl>{{ object.ttl }}</ttl>{% endif %}
     {% if object.image %}<image>
+      <link>{{ object.link }}</link>
       <url>{{ object.image.url }}</url>
       <title>{{ object.title }}</title>
-      <link>{{ object.link }}</link>
     </image>{% endif %}
     <atom:link rel="self" type="application/rss+xml" href="http://feeds.reslife.org/{{ object.slug }}" />
     <itunes:author>{{ object.organization }}</itunes:author>

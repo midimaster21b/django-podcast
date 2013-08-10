@@ -44,9 +44,7 @@
       <link>{{ episode.enclosure_set.all.0.file.url }}</link>
       <description>{{ episode.description|striptags }}</description>
       <author>{% for author in object.author.all %}{{ author.email }} ({{ author.first_name }} {{ author.last_name}}){% if forloop.last %}{% else %}, {% endif %}{% endfor %}</author>
-      {% if episode.category %}<category{% if episode.domain %} url="{{ episode.domain }}"{% endif %}>{{ episode.category }}</category>{% endif %}
-      <enclosure url="{{ episode.enclosure_set.all.0.file.url }}" length="{{ episode.enclosure_set.all.0.file.size }}" type="{{ episode.enclosure_set.all.0.mime }}" />
-      <guid>{{ episode.enclosure_set.all.0.file.url }}</guid>
+      <guid isPermaLink="false">{{ episode.enclosure_set.all.0.file.url }}</guid>
       <pubDate>{{ episode.date|date:"r" }}</pubDate>
       {% if object.image %}<itunes:image href="{{ object.image.url }}" />{% endif %}
       <itunes:author>{% for author in episode.author.all %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{% if author.first_name or author.last_name %}{% if author.first_name and author.last_name %}{{ author.first_name }} {{ author.last_name }}{% endif %}{% if author.first_name and not author.last_name %}{{ author.first_name }}{% endif %}{% if author.last_name and not author.first_name %}{{ author.last_name }}{% endif %}{% else %}{{ author.username }}{% endif %}{% endfor %}</itunes:author>
@@ -56,6 +54,10 @@
       {% if episode.keywords %}<itunes:keywords>{{ episode.keywords }}</itunes:keywords>{% endif %}
       {% if episode.explicit %}<itunes:explicit>{{ episode.explicit|lower }}</itunes:explicit>{% endif %}
       {% if episode.block %}<itunes:block>yes</itunes:block>{% endif %}
+      <media:content url="{{ episode.enclosure_set.all.0.file.url }}" fileSize="{{ episode.enclosure_set.all.0.file.size }}" type="{{ episode.enclosure_set.all.0.mime }}" />
+      <feedburner:origLink>{{ episode.enclosure_set.all.0.file.url }}</feedburner:origLink>
+      <enclosure url="{{ episode.enclosure_set.all.0.file.url }}" length="{{ episode.enclosure_set.all.0.file.size }}" type="{{ episode.enclosure_set.all.0.mime }}" />
+      <feedburner:origEnclosureLink>{{ episode.enclosure_set.all.0.file.url }}</feedburner:origEnclosureLink>
     </item>
     {% endfor %}
     <media:credit role="author">Resurrection Life Church</media:credit>

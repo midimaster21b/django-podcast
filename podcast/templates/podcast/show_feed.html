@@ -26,12 +26,13 @@
     {% if object.subtitle %}<itunes:subtitle>{{ object.subtitle }}</itunes:subtitle>{% endif %}
     <itunes:summary>{% if object.summary %}{{ object.summary|striptags }}{% else %}{{ object.description|striptags }}{% endif %}</itunes:summary>
     {% if object.image %}<itunes:image href="{{ object.image.url }}" />{% endif %}
+    {% if object.explicit %}<itunes:explicit>{{ object.explicit|lower }}</itunes:explicit>{% endif %}
+    <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://feeds.reslife.org/{{ object.slug }}" />
     {% if object.category.all %}{% for category in object.category.all %}{% if category.name %}<itunes:category text="{{ category.parent.name }}">
       <itunes:category text="{{ category.name }}" />
     </itunes:category>
     {% else %}<itunes:category text="{{ category.parent.name }}" />
     {% endif %}{% endfor %}{% endif %}
-    {% if object.explicit %}<itunes:explicit>{{ object.explicit|lower }}</itunes:explicit>{% endif %}
     {% if object.block %}<itunes:block>yes</itunes:block>{% endif %}
     {% if object.redirect %}<itunes:new-feed-url>{{ object.redirect }}</itunes:new-feed-url>{% endif %}
 

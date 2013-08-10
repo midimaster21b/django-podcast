@@ -28,11 +28,14 @@
     {% if object.image %}<itunes:image href="{{ object.image.url }}" />{% endif %}
     {% if object.explicit %}<itunes:explicit>{{ object.explicit|lower }}</itunes:explicit>{% endif %}
     <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://feeds.reslife.org/{{ object.slug }}" />
-    {% if object.category.all %}{% for category in object.category.all %}{% if category.name %}<itunes:category text="{{ category.parent.name }}">
-      <itunes:category text="{{ category.name }}" />
+    <feedburner:info uri="accessrlc" />
+    <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/" />
+    <media:copyright>℗ &amp; © 2013 Resurrection Life Church. All rights reserved.</media:copyright>
+    <media:thumbnail url="http://s3.amazonaws.com/reslife/podcasts/shows/img/AccessPodcast.jpg" />
+    <media:category scheme="http://www.itunes.com/dtds/podcast-1.0.dtd">Religion &amp; Spirituality/Christianity</media:category>
+    <itunes:category text="Religion &amp; Spirituality">
+      <itunes:category text="Christianity" />
     </itunes:category>
-    {% else %}<itunes:category text="{{ category.parent.name }}" />
-    {% endif %}{% endfor %}{% endif %}
     {% if object.block %}<itunes:block>yes</itunes:block>{% endif %}
     {% if object.redirect %}<itunes:new-feed-url>{{ object.redirect }}</itunes:new-feed-url>{% endif %}
 
@@ -55,5 +58,8 @@
       {% if episode.block %}<itunes:block>yes</itunes:block>{% endif %}
     </item>
     {% endfor %}
+    <media:credit role="author">Resurrection Life Church</media:credit>
+    <media:rating>nonadult</media:rating>
+    <media:description type="plain">Life with God - Life Together - Life for Others</media:description>
   </channel>
 </rss>
